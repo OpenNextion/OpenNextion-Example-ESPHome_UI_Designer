@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ESPHome UI Spec Editor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&display=swap"
+    />
+    <link rel="stylesheet" href="./assets/css/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <p class="eyebrow">Drag Config Editor</p>
+          <h1>ESPHome UI Builder</h1>
+          <p class="lede">
+            Edit the compact UI spec visually and generate final ESPHome YAML locally
+            in the browser. Keep UI work here, not in device driver code.
+          </p>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Config</h2>
+          </div>
+          <div class="panel-tabs" role="tablist" aria-label="Config sections">
+            <button
+              id="config-tab-board"
+              type="button"
+              class="panel-tab active"
+              role="tab"
+              aria-selected="true"
+              aria-controls="config-panel-board"
+            >
+              Board
+            </button>
+            <button
+              id="config-tab-wifi"
+              type="button"
+              class="panel-tab"
+              role="tab"
+              aria-selected="false"
+              aria-controls="config-panel-wifi"
+            >
+              Wi-Fi
+            </button>
+          </div>
+          <div id="config-panel-board" class="panel-tab-panel" role="tabpanel" aria-labelledby="config-tab-board">
+            <label class="stack">
+              <span>Model & Resolution</span>
+              <select id="board-select">
+                <option value="nextion_35">ONX3248G035 (480x320)</option>
+                <option value="nextion_28">ONX2432G028 (240x320)</option>
+              </select>
+            </label>
+            <label class="stack">
+              <span>Rotation</span>
+              <select id="rotation-select">
+                <option value="0">0° (Default)</option>
+                <option value="90">90°</option>
+                <option value="180">180°</option>
+                <option value="270">270°</option>
+              </select>
+            </label>
+            <label class="stack">
+              <span>Swipe Direction</span>
+              <select id="swipe-direction">
+                <option value="horizontal">Horizontal</option>
+                <option value="vertical">Vertical</option>
+              </select>
+            </label>
+            <label class="stack">
+              <span>Screen Background</span>
+              <div class="color-picker-row">
+                <input id="screen-bg-color" type="color" value="#f3efe7" />
+                <span id="screen-bg-color-hex" class="color-hex-label">#F3EFE7</span>
+                <button id="screen-bg-color-copy" type="button" class="copy-hex-btn" title="Copy HEX">
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+              </div>
+            </label>
+            <div id="screen-palette" class="palette-grid" aria-label="Background color palette">
+              <button type="button" class="palette-swatch" data-color="#f3efe7" style="--swatch:#f3efe7"></button>
+              <button type="button" class="palette-swatch" data-color="#f8fbf9" style="--swatch:#f8fbf9"></button>
+              <button type="button" class="palette-swatch" data-color="#e8f0ec" style="--swatch:#e8f0ec"></button>
+              <button type="button" class="palette-swatch" data-color="#dfe8f3" style="--swatch:#dfe8f3"></button>
+              <button type="button" class="palette-swatch" data-color="#1f2933" style="--swatch:#1f2933"></button>
+              <button type="button" class="palette-swatch" data-color="#0f1720" style="--swatch:#0f1720"></button>
+            </div>
+            <div class="screen-config-block">
+              <label class="stack">
+                <span>Current Screen</span>
+                <select id="screen-select"></select>
+              </label>
+              <label class="stack">
+                <span>Screen Name</span>
+                <input id="screen-name" type="text" placeholder="Screen 1" />
+              </label>
+              <div class="button-row button-row-two">
+                <button id="add-screen-btn" type="button">Add Screen</button>
+                <button id="delete-screen-btn" type="button" class="danger">Delete Screen</button>
+              </div>
+            </div>
+          </div>
+          <div
+            id="config-panel-wifi"
+            class="panel-tab-panel hidden"
+            role="tabpanel"
+            aria-labelledby="config-tab-wifi"
+            hidden
+          >
+            <label class="stack">
+              <span>Device Name</span>
+              <input id="device-name" type="text" placeholder="device-name" />
+              <p id="device-name-help" class="field-help" aria-live="polite"></p>
+            </label>
+            <label class="stack">
+              <span>Friendly Name</span>
+              <input id="friendly-name" type="text" placeholder="Optional, defaults to DEVICE_NAME" />
+            </label>
+            <label class="stack">
+              <span>SSID</span>
+              <input id="wifi-ssid" type="text" placeholder="Wi-Fi SSID" />
+            </label>
+            <label class="stack">
+              <span>Password</span>
+              <input id="wifi-password" type="text" placeholder="Wi-Fi Password" />
+            </label>
+          </div>
+        </div>
+
+      </aside>
+
+      <main class="workspace">
+        <section class="canvas-panel">
+          <div class="canvas-head">
+            <div>
+              <p class="eyebrow">Preview</p>
+              <h2 id="canvas-res-title">480 x 320 Canvas</h2>
+            </div>
+            <p id="status" class="status">Ready</p>
+          </div>
+          <div class="preview-layout">
+            <div class="preview-stage">
+              <div id="preview-screens" class="preview-screens"></div>
+              <p id="preview-direction" class="hint preview-direction"></p>
+              <div class="canvas-wrap">
+                <div id="canvas" class="canvas" aria-label="UI preview canvas"></div>
+              </div>
+              <p class="hint">
+                Drag the widget body to move it. Drag the bottom-right handle to resize width and height.
+              </p>
+            </div>
+
+            <section class="inspector-panel">
+              <div class="panel-head">
+                <h2>Inspector</h2>
+              </div>
+              <div id="empty-state" class="empty-state">
+                Select a widget on the canvas or from the list.
+              </div>
+              <form id="inspector-form" class="inspector hidden">
+                <section class="inspector-section inspector-section-inline">
+                  <div class="inspector-inline-item">
+                    <label class="inspector-inline-field">
+                      <span class="inspector-inline-label">Type</span>
+                      <select id="field-type" class="field-compact field-compact-select">
+                        <option value="switch">switch</option>
+                        <option value="multi_switch">multi_switch</option>
+                        <option value="thermo_hygrometer">thermo_hygrometer</option>
+                        <option value="cover">cover</option>
+                        <option value="light">light</option>
+                        <option value="hmi_screen_brightness">hmi_screen_brightness</option>
+                      </select>
+                    </label>
+                  </div>
+
+                  <div id="switch-style-fields" class="inspector-inline-item">
+                    <label class="inspector-inline-field">
+                      <span class="inspector-inline-label">Theme</span>
+                      <select id="field-style" class="field-compact field-compact-select">
+                        <option value="switch">switch</option>
+                        <option value="toggle">toggle</option>
+                      </select>
+                    </label>
+                  </div>
+                </section>
+
+                <section class="inspector-section">
+                  <h3 class="inspector-section-title">Properties</h3>
+
+                  <label class="stack">
+                    <span id="field-entityid-label">Entity ID</span>
+                    <input id="field-entityid" type="text" />
+                  </label>
+
+                  <div id="dual-fields" class="hidden">
+                    <label class="stack">
+                      <span id="field-entityid-2-label">Entity ID 2</span>
+                      <input id="field-entityid-2" type="text" />
+                    </label>
+                  </div>
+
+                  <div id="multi-switch-fields" class="hidden">
+                    <div class="multi-switch-field-grid">
+                      <label class="stack multi-switch-field">
+                        <span>Channel 1</span>
+                        <div class="multi-switch-field-row">
+                          <label class="channel-toggle"><input id="field-multi-enabled-1" type="checkbox" /> Enabled</label>
+                          <input id="field-multi-entityid-1" type="text" placeholder="switch.multi_1_1" />
+                          <input id="field-multi-title-1" type="text" placeholder="Switch 1" />
+                        </div>
+                      </label>
+                      <label class="stack multi-switch-field">
+                        <span>Channel 2</span>
+                        <div class="multi-switch-field-row">
+                          <label class="channel-toggle"><input id="field-multi-enabled-2" type="checkbox" /> Enabled</label>
+                          <input id="field-multi-entityid-2" type="text" placeholder="switch.multi_1_2" />
+                          <input id="field-multi-title-2" type="text" placeholder="Switch 2" />
+                        </div>
+                      </label>
+                      <label class="stack multi-switch-field">
+                        <span>Channel 3</span>
+                        <div class="multi-switch-field-row">
+                          <label class="channel-toggle"><input id="field-multi-enabled-3" type="checkbox" /> Enabled</label>
+                          <input id="field-multi-entityid-3" type="text" placeholder="switch.multi_1_3" />
+                          <input id="field-multi-title-3" type="text" placeholder="Switch 3" />
+                        </div>
+                      </label>
+                      <label class="stack multi-switch-field">
+                        <span>Channel 4</span>
+                        <div class="multi-switch-field-row">
+                          <label class="channel-toggle"><input id="field-multi-enabled-4" type="checkbox" /> Enabled</label>
+                          <input id="field-multi-entityid-4" type="text" placeholder="switch.multi_1_4" />
+                          <input id="field-multi-title-4" type="text" placeholder="Switch 4" />
+                        </div>
+                      </label>
+                    </div>
+                    <p class="hint">
+                      Up to four switch channels are supported. Enabled channels are shown in the preview and generated YAML.
+                    </p>
+                  </div>
+
+                  <label class="stack">
+                    <span>Title</span>
+                    <input id="field-title" type="text" />
+                  </label>
+
+                  <div id="active-bg-color-fields" class="hidden">
+                    <label class="stack">
+                      <span>Active Color</span>
+                      <div class="color-picker-row">
+                        <input id="field-active-bg-color" type="color" value="#eaaa78" />
+                        <span id="field-active-bg-color-hex" class="color-hex-label">#eaaa78</span>
+                        <button id="field-active-bg-color-copy" type="button" class="copy-hex-btn" title="Copy HEX">
+                          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                      </div>
+                    </label>
+                  </div>
+
+                  <div id="hmi-brightness-fields" class="hidden">
+                    <label class="inspector-checkline">
+                      <input id="field-hmi-show-header" type="checkbox" />
+                      <span>Show Header</span>
+                    </label>
+                    <label class="stack">
+                      <span>Slider Color</span>
+                      <div class="color-picker-row">
+                        <input id="field-hmi-slider-color" type="color" value="#FDBB13" />
+                        <span id="field-hmi-slider-color-hex" class="color-hex-label">#FDBB13</span>
+                        <button id="field-hmi-slider-color-copy" type="button" class="copy-hex-btn" title="Copy HEX">
+                          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                      </div>
+                    </label>
+                  </div>
+
+                  <div id="thermo-icon-fields" class="hidden">
+                    <label class="stack">
+                      <span>Temp Icon</span>
+                      <input id="field-temp-icon" type="text" placeholder="assets/images/temp.png / /abs/temp.png / https://... / mdi:thermometer" />
+                    </label>
+                    <label class="stack">
+                      <span>Humi Icon</span>
+                      <input id="field-hum-icon" type="text" placeholder="assets/images/hum.png / /abs/hum.png / https://... / mdi:water-percent" />
+                    </label>
+                    <div class="icon-preview-grid">
+                      <div class="icon-preview-card">
+                        <span class="icon-preview-label">Temp Preview</span>
+                        <div class="icon-preview-box">
+                          <img id="temp-icon-preview-img" class="icon-preview-image" alt="Temp icon preview" />
+                          <span id="temp-icon-preview-fallback" class="icon-preview-fallback hidden">No Preview</span>
+                        </div>
+                      </div>
+                      <div class="icon-preview-card">
+                        <span class="icon-preview-label">Humi Preview</span>
+                        <div class="icon-preview-box">
+                          <img id="hum-icon-preview-img" class="icon-preview-image" alt="Humidity icon preview" />
+                          <span id="hum-icon-preview-fallback" class="icon-preview-fallback hidden">No Preview</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="hint">
+                      Supports relative or absolute local paths, <code>http/https</code> URLs, and <code>mdi:icon-name</code>. Generated YAML still uses ESPHome <code>image:</code>, not <code>online_image</code>.
+                    </p>
+                  </div>
+
+                  <div id="light-icon-fields" class="hidden">
+                    <div id="field-light-icon-row" class="hidden">
+                      <label class="stack">
+                        <span>Icon</span>
+                        <input id="field-light-icon" type="text" placeholder="assets/images/light.png / /abs/light.png / https://... / mdi:lightbulb" />
+                      </label>
+                    </div>
+                    <div id="light-tile-position-fields" class="hidden">
+                      <label class="stack">
+                        <span>Tile Icon Position</span>
+                        <select id="field-light-tile-icon-position">
+                          <option value="top-left">top-left</option>
+                          <option value="top-right">top-right</option>
+                          <option value="bottom-left">bottom-left</option>
+                          <option value="bottom-right">bottom-right</option>
+                        </select>
+                      </label>
+                    </div>
+                    <div id="light-slider-fields" class="hidden">
+                      <label class="inspector-checkline">
+                        <input id="field-color-temp" type="checkbox" />
+                        <span>Support Color Temperature Slider</span>
+                      </label>
+                      <label class="inspector-checkline">
+                        <input id="field-hue-360" type="checkbox" />
+                        <span>Support Hue 360 Slider</span>
+                      </label>
+                    </div>
+                    <div id="field-light-preview-ct-row" class="hidden">
+                      <label class="stack">
+                        <span>Preview Color Temp (0-100)</span>
+                        <input id="field-light-preview-ct" type="range" min="0" max="100" value="50" step="1" />
+                      </label>
+                    </div>
+                    <div id="field-light-preview-hue-row" class="hidden">
+                      <label class="stack">
+                        <span>Preview Hue (0-360)</span>
+                        <input id="field-light-preview-hue" type="range" min="0" max="360" value="180" step="1" />
+                      </label>
+                    </div>
+                    <div class="icon-preview-grid hidden">
+                      <div class="icon-preview-card">
+                        <span class="icon-preview-label">Icon Preview</span>
+                        <div class="icon-preview-box">
+                          <img id="light-icon-preview-img" class="icon-preview-image" alt="Light icon preview" />
+                          <span id="light-icon-preview-fallback" class="icon-preview-fallback hidden">No Preview</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="hint">
+                      The light widget uses one icon and switches the whole widget background for <code>on</code> / <code>off</code>. For <code>tile</code> style you can choose which corner the icon bubble uses.
+                    </p>
+                  </div>
+                </section>
+
+                <section class="inspector-section">
+                  <h3 class="inspector-section-title">Position and Size</h3>
+                  <div class="position-size-row">
+                    <label class="inspector-inline-field">
+                      <span class="inspector-inline-label">X</span>
+                      <input id="field-x" class="field-compact-number" type="number" />
+                    </label>
+                    <label class="inspector-inline-field">
+                      <span class="inspector-inline-label">Y</span>
+                      <input id="field-y" class="field-compact-number" type="number" />
+                    </label>
+                    <label class="inspector-inline-field">
+                      <span class="inspector-inline-label">Width</span>
+                      <input id="field-width" class="field-compact-number" type="number" />
+                    </label>
+                    <label class="inspector-inline-field">
+                      <span class="inspector-inline-label">Height</span>
+                      <input id="field-height" class="field-compact-number" type="number" />
+                    </label>
+                  </div>
+                </section>
+
+              </form>
+            </section>
+          </div>
+        </section>
+
+        <div class="workspace-side">
+          <section class="entity-panel">
+            <div class="panel-head">
+              <h2>Entities</h2>
+              <div class="panel-actions">
+                <button id="add-entity-btn" type="button">Add Entity</button>
+              </div>
+            </div>
+            <div id="entity-list" class="entity-list"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Import / Export</h2>
+            </div>
+            <label class="stack">
+              <span>Spec YAML</span>
+              <textarea id="yaml-io" rows="12" spellcheck="false"></textarea>
+            </label>
+            <div class="button-row">
+              <button id="load-yaml-btn" type="button">Load YAML</button>
+              <button id="copy-yaml-btn" type="button">Copy YAML</button>
+              <button id="download-yaml-btn" type="button">Download</button>
+            </div>
+            <p class="hint">
+              Supports the current spec shape: <code>entities[].entityid/type/props</code>.
+            </p>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Build</h2>
+            </div>
+            <div class="button-row">
+              <button id="build-final-btn" type="button">Generate</button>
+              <button id="download-final-btn" type="button">Download</button>
+              <button id="copy-final-btn" type="button">Copy</button>
+            </div>
+            <label class="stack">
+              <span>Final ESPHome YAML</span>
+              <textarea id="final-yaml-io" rows="12" spellcheck="false" readonly></textarea>
+            </label>
+            <p id="build-status" class="hint">Not generated yet.</p>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <template id="entity-item-template">
+      <div class="entity-item" role="button" tabindex="0">
+        <span class="entity-item-actions">
+          <button type="button" class="entity-icon-btn entity-duplicate-btn" title="Duplicate" aria-label="Duplicate">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+          <button type="button" class="entity-icon-btn entity-delete-btn" title="Delete" aria-label="Delete">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>
+          </button>
+        </span>
+        <strong class="entity-item-title"></strong>
+        <span class="entity-item-meta"></span>
+      </div>
+    </template>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
