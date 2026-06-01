@@ -1,6 +1,6 @@
-# ONXWebStudio
+# ESPHome_UI_Designer
 
-ONXWebStudio is a fully browser-based ESPHome YAML editor for building OpenNextion screens with a visual layout workflow, LVGL-style preview, and browser-side YAML generation.
+ESPHome_UI_Designer is a fully browser-based ESPHome YAML editor for building OpenNextion screens with a visual layout workflow, LVGL-style preview, and browser-side YAML generation.
 
 Use it to:
 

@@ -1,4 +1,4 @@
-# ONXWebStudio 快速上手
+# ESPHome_UI_Designer 快速上手
 
 这是一份面向首次使用者的操作教程。若你只是想了解项目整体介绍，请先看 [README_cn.md](README_cn.md)。
 

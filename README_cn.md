@@ -1,6 +1,6 @@
-# ONXWebStudio
+# ESPHome_UI_Designer
 
-ONXWebStudio 是一个纯浏览器端的 ESPHome YAML 编辑器，用来在网页里完成 OpenNextion 屏幕的可视化配置、LVGL 风格预览和最终 YAML 生成。
+ESPHome_UI_Designer 是一个纯浏览器端的 ESPHome YAML 编辑器，用来在网页里完成 OpenNextion 屏幕的可视化配置、LVGL 风格预览和最终 YAML 生成。
 
 它适合用来：
 

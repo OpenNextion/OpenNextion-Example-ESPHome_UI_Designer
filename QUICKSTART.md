@@ -1,4 +1,4 @@
-# ONXWebStudio Quickstart
+# ESPHome_UI_Designer Quickstart
 
 This guide walks through the first-time setup flow. If you only want the project overview, read [README.md](README.md) first.
 
