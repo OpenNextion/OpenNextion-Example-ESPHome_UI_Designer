@@ -8,6 +8,13 @@ Use it to:
 - Preview an interface that stays close to the final LVGL/ESPHome output
 - Generate YAML that can be used with ESPHome
 
+## Supported hardware
+
+| Model | Display | Processor | Purchase |
+| --- | --- | --- | --- |
+| ONX3248G035 (Open Nextion Genius Series) | 3.5-inch, 320 × 480 capacitive touchscreen | ESP32-S3 | [ITEAD official store](https://itead.cc/product/open-nextion-3-5-genius-series-esp32-s3-lcd-touchscreen-development-board/) |
+| ONX2432G028 (Open Nextion Genius Series) | 2.8-inch, 240 × 320 capacitive touchscreen | ESP32-S3 | [ITEAD official store](https://itead.cc/product/open-nextion-2-8-genius-series-esp32-s3-lcd-touchscreen-development-board/) |
+
 ## Preview
 
 <img src="assets/images/readme/1776078561785-cc676c07-01cc-45e3-9f7c-b359fc13b217.png" width="2546" alt="Project architecture">
